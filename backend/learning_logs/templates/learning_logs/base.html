@@ -5,7 +5,7 @@
   <title>Learning Log</title>
 </head>
 <body>
-<p>
+<div>
   <a href="{% url 'learning_logs:index' %}">Learning Log</a> -
   <a href="{% url 'learning_logs:topics' %}">Topics</a> -
   {% if user.is_authenticated %}
@@ -14,10 +14,13 @@
     {% csrf_token %}
     <button type="submit">Logout</button>
     </form>
+{#  <a href="{% url 'accounts:logout' %}">Logout</a> -#}
+
   {% else %}
+  <a href="{% url 'accounts:register' %}">Register</a> -
   <a href="{% url 'accounts:login' %}">Login</a>
   {% endif %}
-</p>
+</div>
 {% block content %}
 {% endblock %}
 </body>
