@@ -15,9 +15,11 @@ class Topic(models.Model):
 class Entry(models.Model):
     text = models.TextField()
     date_added = models.DateTimeField(auto_now_add=True)
+    topic = models.ForeignKey(Topic, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['date_added', 'text']
+        verbose_name_plural = 'entries'
 
     def __str__(self):
         return self.text
