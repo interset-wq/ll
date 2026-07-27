@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, FlatList, StyleSheet, RefreshControl } from 'react-native';
-import { Text, Card, FAB, ActivityIndicator, Dialog, TextInput, Button, Portal } from 'react-native-paper';
+import { View, FlatList, StyleSheet, RefreshControl, Pressable } from 'react-native';
+import { Text, ActivityIndicator, Portal, Modal, TextInput, Button } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { topics } from '../../lib/api';
 
@@ -40,79 +41,184 @@ export default function TopicsScreen() {
     }
   };
 
-  const renderTopic = ({ item }) => (
-    <Card style={styles.card} onPress={() => router.push(`/topic/${item.id}`)}>
-      <Card.Content style={styles.cardContent}>
-        <View style={styles.cardLeft}>
-          <Text variant="titleMedium" numberOfLines={1}>{item.text}</Text>
-          <Text variant="bodySmall" style={styles.meta}>
-            {item.entry_count} entries · {new Date(item.date_added).toLocaleDateString()}
+  const renderTopic = ({ item, index }) => (
+    <Pressable
+      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      onPress={() => router.push(`/topic/${item.id}`)}
+    >
+      <View style={styles.cardLeft}>
+        <View style={[styles.numberBadge, { backgroundColor: getAccentColor(index) }]}>
+          <Text style={styles.numberText}>{String(index + 1).padStart(2, '0')}</Text>
+        </View>
+        <View style={styles.cardInfo}>
+          <Text style={styles.cardTitle} numberOfLines={1}>{item.text}</Text>
+          <Text style={styles.cardMeta}>
+            {item.entry_count} {item.entry_count === 1 ? 'entry' : 'entries'}
           </Text>
         </View>
-        <Text style={styles.arrow}>›</Text>
-      </Card.Content>
-    </Card>
+      </View>
+      <MaterialCommunityIcons name="chevron-right" size={20} color="#CBD5E1" />
+    </Pressable>
   );
 
   return (
     <View style={styles.container}>
       {loading ? (
-        <ActivityIndicator style={styles.loading} size="large" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#6366f1" />
+        </View>
       ) : (
         <FlatList
           data={topicList}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderTopic}
           contentContainerStyle={styles.list}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#6366f1" />}
+          ListHeaderComponent={
+            <Text style={styles.pageTitle}>All Topics</Text>
+          }
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyText}>No topics yet. Create one!</Text>
+              <View style={styles.emptyIconWrap}>
+                <MaterialCommunityIcons name="book-open-page-variant" size={40} color="#C7D2FE" />
+              </View>
+              <Text style={styles.emptyTitle}>No topics yet</Text>
+              <Text style={styles.emptySubtext}>Tap the + button to create your first topic</Text>
             </View>
           }
+          ListFooterComponent={<View style={{ height: 100 }} />}
+          showsVerticalScrollIndicator={false}
         />
       )}
 
-      <FAB
-        icon="plus"
-        style={styles.fab}
+      <Pressable
+        style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
         onPress={() => setShowNew(true)}
-      />
+      >
+        <MaterialCommunityIcons name="plus" size={28} color="#fff" />
+      </Pressable>
 
       <Portal>
-        <Dialog visible={showNew} onDismiss={() => setShowNew(false)}>
-          <Dialog.Title>New Topic</Dialog.Title>
-          <Dialog.Content>
-            <TextInput
-              label="Topic name"
-              value={newTitle}
-              onChangeText={setNewTitle}
-              mode="outlined"
-              autoFocus
-            />
-          </Dialog.Content>
-          <Dialog.Actions>
-            <Button onPress={() => setShowNew(false)}>Cancel</Button>
-            <Button onPress={handleCreate} loading={creating} disabled={!newTitle.trim()}>
+        <Modal
+          visible={showNew}
+          onDismiss={() => setShowNew(false)}
+          contentContainerStyle={styles.modal}
+        >
+          <Text style={styles.modalTitle}>New Topic</Text>
+          <Text style={styles.modalSubtitle}>What do you want to learn about?</Text>
+          <TextInput
+            value={newTitle}
+            onChangeText={setNewTitle}
+            mode="outlined"
+            placeholder="e.g. Python, Design, History..."
+            autoFocus
+            outlineColor="#E2E8F0"
+            activeOutlineColor="#6366f1"
+            style={styles.input}
+          />
+          <View style={styles.modalActions}>
+            <Button
+              mode="text"
+              onPress={() => { setShowNew(false); setNewTitle(''); }}
+              textColor="#64748B"
+              style={styles.cancelBtn}
+            >
+              Cancel
+            </Button>
+            <Button
+              mode="contained"
+              onPress={handleCreate}
+              loading={creating}
+              disabled={!newTitle.trim()}
+              buttonColor="#6366f1"
+              style={styles.createBtn}
+            >
               Create
             </Button>
-          </Dialog.Actions>
-        </Dialog>
+          </View>
+        </Modal>
       </Portal>
     </View>
   );
 }
 
+function getAccentColor(index) {
+  const colors = ['#EEF2FF', '#FEF3C7', '#ECFDF5', '#FCE7F3', '#F0F9FF'];
+  return colors[index % colors.length];
+}
+
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
-  loading: { flex: 1, justifyContent: 'center' },
-  list: { padding: 16 },
-  card: { marginBottom: 10, elevation: 1 },
-  cardContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  cardLeft: { flex: 1 },
-  meta: { color: '#666', marginTop: 2 },
-  arrow: { fontSize: 24, color: '#999', marginLeft: 8 },
-  fab: { position: 'absolute', right: 16, bottom: 16, backgroundColor: '#6366f1' },
-  empty: { alignItems: 'center', marginTop: 48 },
-  emptyText: { color: '#666' },
+  container: { flex: 1, backgroundColor: '#F8FAFC' },
+  loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  list: { paddingTop: 8, paddingHorizontal: 20 },
+  pageTitle: { fontSize: 24, fontWeight: '800', color: '#0F172A', marginBottom: 16 },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 10,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 1,
+  },
+  pressed: { opacity: 0.6, transform: [{ scale: 0.98 }] },
+  cardLeft: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  numberBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  numberText: { fontSize: 13, fontWeight: '700', color: '#6366f1' },
+  cardInfo: { flex: 1 },
+  cardTitle: { fontSize: 15, fontWeight: '600', color: '#0F172A' },
+  cardMeta: { fontSize: 12, color: '#94A3B8', marginTop: 2 },
+  fab: {
+    position: 'absolute',
+    right: 20,
+    bottom: 28,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#6366f1',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#6366f1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  fabPressed: { transform: [{ scale: 0.92 }] },
+  empty: { alignItems: 'center', marginTop: 60, paddingHorizontal: 40 },
+  emptyIconWrap: {
+    width: 80,
+    height: 80,
+    borderRadius: 24,
+    backgroundColor: '#EEF2FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: { fontSize: 17, fontWeight: '700', color: '#0F172A', marginBottom: 6 },
+  emptySubtext: { fontSize: 13, color: '#94A3B8', textAlign: 'center', lineHeight: 18 },
+  modal: {
+    backgroundColor: '#fff',
+    margin: 20,
+    borderRadius: 20,
+    padding: 24,
+  },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: '#0F172A' },
+  modalSubtitle: { fontSize: 13, color: '#94A3B8', marginTop: 4, marginBottom: 16 },
+  input: { backgroundColor: '#F8FAFC' },
+  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 16, gap: 8 },
+  cancelBtn: { borderRadius: 10 },
+  createBtn: { borderRadius: 10 },
 });
