@@ -39,7 +39,6 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="(auth)" />
       <Stack.Screen name="topic/[id]" options={{ headerShown: true, title: 'Topic' }} />
       <Stack.Screen name="entry/[id]" options={{ headerShown: true, title: 'Entry' }} />
     </Stack>
