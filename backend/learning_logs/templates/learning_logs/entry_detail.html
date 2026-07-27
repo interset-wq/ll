@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ entry.display_title }} - {{ topic }} - Learning Log{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'mdeditor/css/editormd.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{% url 'learning_logs:topic' topic.pk %}" class="text-sm text-indigo-600 hover:text-indigo-800">&larr; {{ topic }}</a>
+</div>
+
+<article class="bg-white p-6 rounded-lg shadow max-w-3xl">
+    <h1 class="text-2xl font-bold mb-4">{{ entry.display_title }}</h1>
+
+    <div class="flex items-center space-x-4 text-sm text-gray-500 mb-6">
+        <span>{{ entry.date_added|date:'Y-m-d H:i' }}</span>
+        {% if entry.updated_at != entry.date_added %}
+        <span>&middot; updated {{ entry.updated_at|date:'Y-m-d H:i' }}</span>
+        {% endif %}
+        <span>&middot; {{ entry.word_count }} chars</span>
+    </div>
+
+    <div id="md-preview"></div>
+
+    <div class="flex space-x-4 mt-8 pt-6 border-t">
+        <a href="{% url 'learning_logs:edit_entry' entry.pk %}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Edit</a>
+        <a href="{% url 'learning_logs:duplicate_entry' entry.pk %}" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Duplicate</a>
+        <form method="post" action="{% url 'learning_logs:toggle_favorite' entry.pk %}" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="px-4 py-2 rounded-lg transition {% if entry.favorited %}bg-yellow-400 text-white hover:bg-yellow-500{% else %}bg-gray-200 text-gray-700 hover:bg-gray-300{% endif %}">
+                {% if entry.favorited %}&#9733; Favorited{% else %}&#9734; Favorite{% endif %}
+            </button>
+        </form>
+        <a href="{% url 'learning_logs:delete_entry' entry.pk %}" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">Delete</a>
+    </div>
+</article>
+
+<script src="{% static 'mdeditor/js/lib/marked.min.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var md = "{{ entry.text|escapejs }}";
+    document.getElementById('md-preview').innerHTML = marked.parse(md);
+});
+</script>
+{% endblock %}

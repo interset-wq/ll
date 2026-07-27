@@ -1,13 +1,21 @@
-{% extends 'learning_logs/base.html' %}
+{% extends 'base.html' %}
+
+{% block title %}Topics - Learning Log{% endblock %}
 
 {% block content %}
-  <h1>Topics</h1>
-  <ul>
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Topics</h1>
+    <a href="{% url 'learning_logs:new_topic' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">New Topic</a>
+</div>
+
+<div class="space-y-3">
     {% for topic in topics %}
-      <li><a href="{% url 'learning_logs:topic' topic.pk %}">{{ topic }}</a></li>
+    <div class="bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+        <a href="{% url 'learning_logs:topic' topic.pk %}" class="text-lg font-medium text-indigo-600 hover:text-indigo-800">{{ topic }}</a>
+        <p class="text-sm text-gray-500 mt-1">{{ topic.date_added|date:'Y-m-d H:i' }}</p>
+    </div>
     {% empty %}
-      <li>No topics</li>
+    <p class="text-gray-500">No topics yet.</p>
     {% endfor %}
-  </ul>
-  <a href="{% url 'learning_logs:new_topic' %}">New topic</a>
+</div>
 {% endblock %}

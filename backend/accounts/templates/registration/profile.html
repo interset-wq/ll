@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Learning Log{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Profile</h1>
+
+<div class="bg-white p-6 rounded-lg shadow max-w-lg">
+    <div class="space-y-3">
+        <div>
+            <p class="text-sm text-gray-500">Username</p>
+            <p class="font-medium">{{ user.username }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Email</p>
+            <p class="font-medium">{{ user.email|default:"-" }}</p>
+        </div>
+        <div>
+            <p class="text-sm text-gray-500">Name</p>
+            <p class="font-medium">{{ user.first_name }} {{ user.last_name|default:"-" }}</p>
+        </div>
+    </div>
+    <div class="mt-6">
+        <a href="{% url 'accounts:edit_profile' %}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Edit Profile</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,19 +1,37 @@
-{% extends 'learning_logs/base.html' %}
+{% extends 'base.html' %}
+
+{% block title %}{{ topic }} - Learning Log{% endblock %}
 
 {% block content %}
-  <h1>Topic: {{ topic }}</h1>
-  <p>Entries: </p>
-  <a><a href="{% url 'learning_logs:new_entry' topic.pk %}">New Entry</a></p>
-  <ul>
+<div class="mb-6">
+    <h1 class="text-2xl font-bold mb-2">{{ topic }}</h1>
+    <div class="flex space-x-4">
+        <a href="{% url 'learning_logs:edit_topic' topic.pk %}" class="text-sm text-indigo-600 hover:text-indigo-800">Edit Topic</a>
+        <a href="{% url 'learning_logs:delete_topic' topic.pk %}" class="text-sm text-red-600 hover:text-red-800">Delete Topic</a>
+    </div>
+</div>
+
+<div class="flex justify-between items-center mb-4">
+    <h2 class="text-lg font-semibold">Entries</h2>
+    <a href="{% url 'learning_logs:new_entry' topic.pk %}" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">New Entry</a>
+</div>
+
+<div class="space-y-2">
     {% for entry in entries %}
-      <li>
-        <p>{{ entry.date_added|date:'M d, Y H:i' }}
-        <a href="{% url 'learning_logs:edit_entry' entry.pk %}">Edit</a>
-        </p>
-        <p>{{ entry.text|linebreaks }}</p>
-      </li>
+    <a href="{% url 'learning_logs:entry_detail' entry.pk %}" class="block bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+        <p class="font-medium text-gray-900">{{ entry.display_title }}</p>
+        <div class="flex items-center space-x-4 text-xs text-gray-400 mt-2">
+            <span>{{ entry.date_added|date:'Y-m-d H:i' }}</span>
+            <span>&middot;</span>
+            <span>{{ entry.word_count }} chars</span>
+            {% if entry.updated_at != entry.date_added %}
+            <span>&middot;</span>
+            <span>updated {{ entry.updated_at|date:'Y-m-d H:i' }}</span>
+            {% endif %}
+        </div>
+    </a>
     {% empty %}
-      <li>No entries.</li>
+    <p class="text-gray-500">No entries yet.</p>
     {% endfor %}
-  </ul>
+</div>
 {% endblock %}

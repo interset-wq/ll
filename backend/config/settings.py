@@ -34,7 +34,16 @@ INSTALLED_APPS = [
     # My APP
     'learning_logs',
     'accounts',
-    
+    'api',
+
+    # Packages
+    'tailwind',
+    'theme',
+    'mdeditor',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'drf_spectacular',
+
     # Django
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,9 +51,44 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Packages
 ]
+
+TAILWIND_APP_NAME = "theme"
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        'api.authentication.CsrfExemptSessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Learning Log API',
+    'DESCRIPTION': 'REST API for Learning Log application',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
+MDEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': ['undo', 'redo', '|', 'bold', 'italic', 'link',
+                     'unordered-list', 'ordered-list', '|',
+                     'preview', 'fullscreen'],
+        'previewTheme': 'dark',
+        'language': 'zh',
+        'upload_image_format': 'jpg,jpeg,png,gif',
+        'image_folder': 'mdeditor_images',
+        'width': '100%',
+        'height': 400,
+        'preview_background_color': '#ffffff',
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,7 +105,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

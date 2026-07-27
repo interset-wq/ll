@@ -1,10 +1,21 @@
-{% extends 'learning_logs/base.html' %}
+{% extends 'base.html' %}
+
+{% block title %}New Topic - Learning Log{% endblock %}
 
 {% block content %}
-  <h1>Create new topic: </h1>
-<form action="{% url 'learning_logs:new_topic' %}" method="post">
-{% csrf_token %}
-{{ form.as_div }}
-<input type="submit" value="Submit">
-</form>
+<h1 class="text-2xl font-bold mb-6">New Topic</h1>
+
+<div class="bg-white p-6 rounded-lg shadow max-w-lg">
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-4">
+            <label for="id_text" class="block text-sm font-medium text-gray-700 mb-1">Topic</label>
+            <input type="text" name="text" id="id_text" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+        </div>
+        <div class="flex space-x-4">
+            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition">Create</button>
+            <a href="{% url 'learning_logs:topics' %}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

@@ -1,6 +1,16 @@
-{% extends 'learning_logs/base.html' %}
+{% extends 'base.html' %}
+
+{% block title %}Learning Log{% endblock %}
 
 {% block content %}
-  <h1>Learning Logs</h1>
-  <p>Welcome to the Learning Logs web application.</p>
+<div class="text-center py-16">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">Learning Log</h1>
+    <p class="text-lg text-gray-600 mb-8">Track your learning progress.</p>
+    {% if user.is_authenticated %}
+        <a href="{% url 'learning_logs:topics' %}" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition">Go to Topics</a>
+    {% else %}
+        <a href="{% url 'accounts:login' %}" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition">Login</a>
+        <a href="{% url 'accounts:register' %}" class="inline-block bg-gray-200 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-300 transition ml-4">Register</a>
+    {% endif %}
+</div>
 {% endblock %}

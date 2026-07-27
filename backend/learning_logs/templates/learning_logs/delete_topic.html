@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Topic - Learning Log{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Delete Topic</h1>
+
+<div class="bg-white p-6 rounded-lg shadow max-w-lg">
+    <p class="mb-4">Are you sure you want to delete "<strong>{{ topic }}</strong>"?</p>
+    <p class="text-sm text-gray-500 mb-6">This will also delete all entries in this topic.</p>
+    <div class="flex space-x-4">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition">Delete</button>
+        </form>
+        <a href="{% url 'learning_logs:topic' topic.pk %}" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-300 transition">Cancel</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Learning Log{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Dashboard</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white p-4 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold text-indigo-600">{{ total_topics }}</div>
+        <div class="text-gray-500 text-sm mt-1">Topics</div>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold text-indigo-600">{{ total_entries }}</div>
+        <div class="text-gray-500 text-sm mt-1">Entries</div>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold text-indigo-600">{{ total_words }}</div>
+        <div class="text-gray-500 text-sm mt-1">Total Chars</div>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold text-indigo-600">{{ entries_this_week }}</div>
+        <div class="text-gray-500 text-sm mt-1">This Week</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold">Recent Entries</h2>
+        </div>
+        {% if recent_entries %}
+        <div class="space-y-3">
+            {% for entry in recent_entries %}
+            <a href="{% url 'learning_logs:entry_detail' entry.pk %}" class="block bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                <div class="font-medium">{{ entry.display_title }}</div>
+                <div class="text-sm text-gray-500 mt-1">{{ entry.topic }} · {{ entry.date_added|date:'Y-m-d H:i' }}</div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500">No entries yet.</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg font-semibold">Recent Topics</h2>
+            <a href="{% url 'learning_logs:new_topic' %}" class="text-sm text-indigo-600 hover:text-indigo-800">+ New</a>
+        </div>
+        {% if recent_topics %}
+        <div class="space-y-3">
+            {% for topic in recent_topics %}
+            <a href="{% url 'learning_logs:topic' topic.pk %}" class="block bg-white p-4 rounded-lg shadow hover:shadow-md transition">
+                <div class="font-medium">{{ topic }}</div>
+                <div class="text-sm text-gray-500 mt-1">{{ topic.entry_set.count }} entries · {{ topic.date_added|date:'Y-m-d' }}</div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500">No topics yet. <a href="{% url 'learning_logs:new_topic' %}" class="text-indigo-600 hover:underline">Create one</a></p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

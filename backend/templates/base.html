@@ -1,0 +1,77 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="zh-hans">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Learning Log{% endblock %}</title>
+    {% tailwind_css %}
+    <style>
+        #md-preview h1, #md-preview h2, #md-preview h3, #md-preview h4 { font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+        #md-preview h1 { font-size: 1.75rem; }
+        #md-preview h2 { font-size: 1.5rem; }
+        #md-preview h3 { font-size: 1.25rem; }
+        #md-preview p { margin-bottom: 0.75rem; line-height: 1.75; }
+        #md-preview ul, #md-preview ol { padding-left: 1.5rem; margin-bottom: 0.75rem; }
+        #md-preview ul { list-style-type: disc; }
+        #md-preview ol { list-style-type: decimal; }
+        #md-preview li { margin-bottom: 0.25rem; }
+        #md-preview code { background: #f3f4f6; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.875rem; }
+        #md-preview pre { background: #1f2937; color: #e5e7eb; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 0.75rem; }
+        #md-preview pre code { background: transparent; padding: 0; color: inherit; }
+        #md-preview blockquote { border-left: 4px solid #d1d5db; padding-left: 1rem; color: #6b7280; margin-bottom: 0.75rem; }
+        #md-preview table { width: 100%; border-collapse: collapse; margin-bottom: 0.75rem; }
+        #md-preview th, #md-preview td { border: 1px solid #d1d5db; padding: 0.5rem 0.75rem; text-align: left; }
+        #md-preview th { background: #f9fafb; font-weight: 600; }
+        #md-preview a { color: #4f46e5; text-decoration: underline; }
+        #md-preview img { max-width: 100%; border-radius: 0.5rem; }
+        #md-preview hr { border: 0; border-top: 1px solid #d1d5db; margin: 1.5rem 0; }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen">
+    <nav class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center space-x-8">
+                    <a href="{% url 'learning_logs:index' %}" class="text-xl font-bold text-indigo-600">Learning Log</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'learning_logs:dashboard' %}" class="text-gray-600 hover:text-gray-900">Dashboard</a>
+                    <a href="{% url 'learning_logs:topics' %}" class="text-gray-600 hover:text-gray-900">Topics</a>
+                    <a href="{% url 'learning_logs:favorites' %}" class="text-gray-600 hover:text-gray-900">Favorites</a>
+                    <a href="{% url 'learning_logs:stats' %}" class="text-gray-600 hover:text-gray-900">Stats</a>
+                    <a href="{% url 'learning_logs:search' %}" class="text-gray-600 hover:text-gray-900">Search</a>
+                    {% endif %}
+                    <a href="{% url 'learning_logs:about' %}" class="text-gray-600 hover:text-gray-900">About</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:profile' %}" class="text-gray-600 hover:text-gray-900">{{ user.username }}</a>
+                        <form action="{% url 'accounts:logout' %}" method="post" class="inline">
+                            {% csrf_token %}
+                            <button type="submit" class="text-gray-600 hover:text-gray-900">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'accounts:register' %}" class="text-gray-600 hover:text-gray-900">Register</a>
+                        <a href="{% url 'accounts:login' %}" class="text-gray-600 hover:text-gray-900">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if messages %}
+        <div class="mb-4 space-y-2">
+            {% for message in messages %}
+            <div class="p-4 rounded {% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

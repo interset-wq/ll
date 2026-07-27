@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Statistics - Learning Log{% endblock %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Statistics</h1>
+
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white p-4 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold text-indigo-600">{{ total_topics }}</div>
+        <div class="text-gray-500 text-sm mt-1">Topics</div>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold text-indigo-600">{{ total_entries }}</div>
+        <div class="text-gray-500 text-sm mt-1">Entries</div>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold text-indigo-600">{{ total_words }}</div>
+        <div class="text-gray-500 text-sm mt-1">Total Chars</div>
+    </div>
+    <div class="bg-white p-4 rounded-lg shadow text-center">
+        <div class="text-3xl font-bold text-indigo-600">{{ avg_words }}</div>
+        <div class="text-gray-500 text-sm mt-1">Avg Chars/Entry</div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-semibold mb-4">Entries (Last 30 Days)</h2>
+        <div class="flex items-end h-32 gap-px">
+            {% for day in days %}
+            <div class="flex-1 min-w-0">
+                <div class="bg-indigo-500 rounded-t mx-auto" style="height: {% if day.count %}{% widthratio day.count 1 4 %}{% else %}0{% endif %}%; min-height: {% if day.count %}2px{% else %}0px{% endif %};" title="{{ day.date }}: {{ day.count }} entries"></div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="flex justify-between text-xs text-gray-400 mt-2">
+            <span>{{ days.0.date|date:'M d' }}</span>
+            <span>{{ days.last.date|date:'M d' }}</span>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-semibold mb-4">Top Topics</h2>
+        {% if topic_stats %}
+        <div class="space-y-3">
+            {% for topic in topic_stats %}
+            <div class="flex items-center">
+                <div class="flex-1">
+                    <div class="font-medium text-sm">{{ topic.text }}</div>
+                </div>
+                <div class="text-sm text-gray-500">{{ topic.entry_count }} entries</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-gray-500">No data yet.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-lg font-semibold mb-4">Recent Entries</h2>
+    {% if recent_entries %}
+    <div class="space-y-3">
+        {% for entry in recent_entries %}
+        <a href="{% url 'learning_logs:entry_detail' entry.pk %}" class="block p-3 rounded-lg hover:bg-gray-50 transition">
+            <div class="font-medium">{{ entry.display_title }}</div>
+            <div class="text-sm text-gray-500 mt-1">{{ entry.topic }} · {{ entry.date_added|date:'Y-m-d H:i' }} · {{ entry.word_count }} chars</div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-gray-500">No entries yet.</p>
+    {% endif %}
+</div>
+{% endblock %}
